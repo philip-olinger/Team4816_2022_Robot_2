@@ -70,9 +70,9 @@ public class Robot extends TimedRobot {
     m_rightFrontMotor.setInverted(true);
     m_rightRearMotor.setInverted(true);
     // We can set them to inverted and save to flash memory
-    private REVLibError resultFront = m_rightFrontMotor.burnFlash();
-    private REVLibError resultRear = m_rightRearMotor.burnFlash();
-    if((resultFront != REVLibError.kOk) or (resultRear != REVLibError.kOk)){
+    REVLibError resultFront = m_rightFrontMotor.burnFlash();
+    REVLibError resultRear = m_rightRearMotor.burnFlash();
+    if((resultFront != REVLibError.kOk) || (resultRear != REVLibError.kOk)){
       // Uh oh! Saving the inverted status to flash memory failed!
       // Action TBD
     }
