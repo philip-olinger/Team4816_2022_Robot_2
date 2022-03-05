@@ -42,6 +42,7 @@ public class Robot extends TimedRobot {
   private CANSparkMax m_leftFrontMotor, m_leftRearMotor;
   private CANSparkMax m_rightFrontMotor, m_rightRearMotor;
   // Soon to include pickup roller motor and others
+  private CANSparkMax m_intakeMotor;
   private MotorControllerGroup m_leftMotors, m_rightMotors;
   private DifferentialDrive m_robotDrive;
   private XboxController m_stick;
@@ -65,10 +66,13 @@ public class Robot extends TimedRobot {
      * https://docs.wpilib.org/en/latest/docs/software/can-devices/can-addressing.html
      */
     m_rightFrontMotor = new CANSparkMax(3, CANSparkMaxLowLevel.MotorType.kBrushless);
-    m_rightRearMotor = new CANSparkMax(2, CANSparkMaxLowLevel.MotorType.kBrushless);
+    m_rightRearMotor = new CANSparkMax(6, CANSparkMaxLowLevel.MotorType.kBrushless);
+    
+    /*
     // For 2022, we may need to set the right-side motors to inverted
     m_rightFrontMotor.setInverted(true);
     m_rightRearMotor.setInverted(true);
+
     // We can set them to inverted and save to flash memory
     REVLibError resultFront = m_rightFrontMotor.burnFlash();
     REVLibError resultRear = m_rightRearMotor.burnFlash();
@@ -76,15 +80,19 @@ public class Robot extends TimedRobot {
       // Uh oh! Saving the inverted status to flash memory failed!
       // Action TBD
     }
+    */
     
-    m_leftFrontMotor = new CANSparkMax(6, CANSparkMaxLowLevel.MotorType.kBrushless);
+    m_leftFrontMotor = new CANSparkMax(4, CANSparkMaxLowLevel.MotorType.kBrushless);
     m_leftRearMotor = new CANSparkMax(5, CANSparkMaxLowLevel.MotorType.kBrushless);
-    
-    m_stick = new XboxController(0);
-
+     
     m_leftMotors = new MotorControllerGroup(m_leftFrontMotor, m_leftRearMotor);
     m_rightMotors = new MotorControllerGroup(m_rightFrontMotor, m_rightRearMotor);
     m_robotDrive = new DifferentialDrive(m_leftMotors, m_rightMotors);
+
+    m_intakeMotor = new CANSparkMax(2, CANSparkMaxLowLevel.MotorType.kBrushless);
+
+    m_stick = new XboxController(0);
+
   }
 
   /**
