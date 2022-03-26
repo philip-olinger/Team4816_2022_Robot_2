@@ -6,12 +6,10 @@ package frc.robot;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
-import com.revrobotics.REVLibError;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType.*;
-import edu.wpi.first.wpilibj.Joystick;
+// import com.revrobotics.REVLibError;
+// import com.revrobotics.CANSparkMaxLowLevel.MotorType.*;
+// import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -24,12 +22,6 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
  * project.
  */
 public class Robot extends TimedRobot {
-  /* Sample code to interact with smartdashboard */
-  private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
-  private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
-
   /**
    * Declare all your objects here
    *
@@ -39,13 +31,14 @@ public class Robot extends TimedRobot {
    * Joystick or XboxController (or other controller types)
    * Timer (to measure elapsed time in Autonomous mode)
    */
-  private CANSparkMax m_leftFrontMotor, m_leftRearMotor;
+  private CANSparkMax m_leftFrontMotor, m_leftRearMotor; 
   private CANSparkMax m_rightFrontMotor, m_rightRearMotor;
   // Soon to include pickup roller motor and others
   private CANSparkMax m_intakeMotor;
   private MotorControllerGroup m_leftMotors, m_rightMotors;
   private DifferentialDrive m_robotDrive;
   private XboxController m_stick;
+  private XboxController n_stick;
   private final Timer m_timer = new Timer();
 
   /**
@@ -54,11 +47,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    /* More smartdashboard integration */
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
-
     /**
      * Instantiate your objects from above and assign them here
      * 
@@ -67,31 +55,26 @@ public class Robot extends TimedRobot {
      */
     m_rightFrontMotor = new CANSparkMax(3, CANSparkMaxLowLevel.MotorType.kBrushless);
     m_rightRearMotor = new CANSparkMax(6, CANSparkMaxLowLevel.MotorType.kBrushless);
-    
-    /*
+    m_leftFrontMotor = new CANSparkMax(2, CANSparkMaxLowLevel.MotorType.kBrushless);
+    m_leftRearMotor = new CANSparkMax(7, CANSparkMaxLowLevel.MotorType.kBrushless);
+    m_intakeMotor = new CANSparkMax(4, CANSparkMaxLowLevel.MotorType.kBrushless);    
+   
     // For 2022, we may need to set the right-side motors to inverted
-    m_rightFrontMotor.setInverted(true);
-    m_rightRearMotor.setInverted(true);
+    m_rightFrontMotor.setInverted(false);
+    m_rightRearMotor.setInverted(false);
+    m_leftFrontMotor.setInverted(true);
+    m_leftRearMotor.setInverted(true);
+    //m_intakeMotor.setInverted(false);
 
-    // We can set them to inverted and save to flash memory
-    REVLibError resultFront = m_rightFrontMotor.burnFlash();
-    REVLibError resultRear = m_rightRearMotor.burnFlash();
-    if((resultFront != REVLibError.kOk) || (resultRear != REVLibError.kOk)){
-      // Uh oh! Saving the inverted status to flash memory failed!
-      // Action TBD
-    }
-    */
-    
-    m_leftFrontMotor = new CANSparkMax(4, CANSparkMaxLowLevel.MotorType.kBrushless);
-    m_leftRearMotor = new CANSparkMax(5, CANSparkMaxLowLevel.MotorType.kBrushless);
-     
     m_leftMotors = new MotorControllerGroup(m_leftFrontMotor, m_leftRearMotor);
     m_rightMotors = new MotorControllerGroup(m_rightFrontMotor, m_rightRearMotor);
+
     m_robotDrive = new DifferentialDrive(m_leftMotors, m_rightMotors);
 
-    m_intakeMotor = new CANSparkMax(2, CANSparkMaxLowLevel.MotorType.kBrushless);
+    // m_intakeMotor = new CANSparkMax(2, CANSparkMaxLowLevel.MotorType.kBrushless);
 
     m_stick = new XboxController(0);
+    n_stick = new XboxController(1);
 
   }
 
@@ -117,11 +100,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    /* smartdashboard */
-    m_autoSelected = m_chooser.getSelected();
-    m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
-
     /* Set up the Timer for measuring how long we drive in autonomous */
     m_timer.reset();
     m_timer.start();
@@ -130,26 +108,18 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    /* smartdashboard integration */
-    switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        // Drive for 2 seconds
-        if (m_timer.get() < 3.0) {
-          /**
-          * Operate the robotDrive subclass to drive the robot
-          */
-          m_robotDrive.arcadeDrive(0.5, 0.0); // drive forwards half speed
+    // Drive for 2 seconds
+    if (m_timer.get() < 3.0) {
+      /**
+      * Operate the robotDrive subclass to drive the robot
+      */
+      m_robotDrive.arcadeDrive(-0.5, 0.0); // drive forwards half speed
 
-        } else {
-          m_robotDrive.stopMotor(); // stop robot
-        }
-        break; // Exit the case statement
+    } else {
+      m_robotDrive.stopMotor(); // stop robot
     }
+    //break; // Exit the case statement
+    //}
   }
 
   /** This function is called once when teleop is enabled. */
@@ -163,8 +133,8 @@ public class Robot extends TimedRobot {
     // m_robotDrive.arcadeDrive(m_stick.getLeftY(), m_stick.getLeftX());
     
     // For tank drive, we need two sticks
-    double y_val = m_stick.getRightY();
-    double x_val = m_stick.getLeftY();
+    double y_val = m_stick.getLeftY();
+    double x_val = m_stick.getRightY();
 
     // Keep the sign for later on (+ for forward, - for backward)
     double y_sign = 1.0;
@@ -175,9 +145,32 @@ public class Robot extends TimedRobot {
     if(x_val < 0){
       x_sign = -x_sign;
     }
+    // Tone down the top speed
+    y_val *= 0.9;
+    x_val *= 0.9;
     // Square the inputs for exponential response, but keep the sign
     m_robotDrive.tankDrive((y_sign * (y_val * y_val)),
                            (x_sign * (x_val * x_val)));
+
+    // Control the intake by toggling on and off
+    boolean intake_on = false;
+    if(n_stick.getRightBumperPressed()){
+      if(intake_on == false){
+        // Toggle on
+        m_intakeMotor.set(0.25);  // Speed is 0.25
+      } else {
+        // Toggle off
+        m_intakeMotor.set(0.0);
+      }
+    };
+
+
+
+  }
+
+  @Override
+  public void teleopExit() {
+    m_intakeMotor.set(0.0);
   }
 
   /** This function is called once when the robot is disabled. */
