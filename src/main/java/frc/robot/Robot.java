@@ -196,8 +196,8 @@ public class Robot extends TimedRobot {
       }
     };
 
-    // Control the winch
-    // TBD
+    // Control the winch with right stick of 2nd XboxController
+    m_winchMotorA.set(n_stick.getRightY());
 
     /**
      * Experimental PID Control - refer to:
